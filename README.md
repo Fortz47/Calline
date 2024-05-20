@@ -28,7 +28,7 @@ Calline is a web application designed for high-quality video and audio calls, su
 
 ## File Structure
 ```
-calline/
+Calline/
 ├── controllers/
 │   └── AppController.js
 ├── public/
