@@ -4,11 +4,11 @@
 Calline is a web application designed for high-quality video and audio calls, supporting both individual and group chats. It features an intuitive interface and robust security measures to ensure a seamless communication experience. Future enhancements will include image processing for background customization and filters, as well as AI tools such as auto-transcription, noise cancellation, and emotion detection to further enhance the user experience.
 
 ## Technologies
-- WebRTC: Real-time communication for video and audio calls.
-- Node.js: JavaScript runtime for building scalable network applications.
-- Express: Fast, unopinionated, minimalist web framework for Node.js.
-- Bootstrap: Front-end framework for developing responsive and mobile-first web applications.
-- Firebase: Backend-as-a-Service providing Firestore for real-time database and authentication.
+- **WebRTC**: Real-time communication for video and audio calls.
+- **Node.js**: JavaScript runtime for building scalable network applications.
+- **Express**: Fast, unopinionated, minimalist web framework for Node.js.
+- **Bootstrap**: Front-end framework for developing responsive and mobile-first web applications.
+- **Firebase**: Backend-as-a-Service providing Firestore for real-time database and authentication.
 
 ## Features
 - High-quality video and audio calls
@@ -27,6 +27,7 @@ Calline is a web application designed for high-quality video and audio calls, su
 - Click the Hang Up button to end the call.
 
 ## File Structure
+```
 calline/
 ├── controllers/
 │   └── AppController.js
@@ -36,7 +37,8 @@ calline/
 │   └── index.js
 ├── server.js
 └── README.md
+```
 
 ## Authors
-- Atuokwu A. Fortune | (Github)[https://github.com/Fortz47] | (Email)[atukwu.fortune@gmail.com]
-- Rophen Padonou | (Github)[https://github.com/Rophpad] | (Email)[]
+- Atuokwu A. Fortune | [Github](https://github.com/Fortz47) | [Email](atukwu.fortune@gmail.com)
+- Rophen Padonou | [Github](https://github.com/Rophpad) | [Email]()
