@@ -21,7 +21,7 @@ The application uses two Firebase services available on the web:
 - Cloud Firestore to save structured data on the Cloud and get instant notification when the data is updated.
 - Firebase Hosting to host and serve your static assets.
 
-**Firebase Hosting** has already been configured in the project starter app repo to be cloned.
+**Firebase Hosting** has already been configured in the project starter app repo.
 For **Cloud Firestore**, the configuration and enabling of the services using the Firebase console is as follows:
 
 ### Enable Cloud Firestore
