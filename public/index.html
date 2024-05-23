@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to FirebaseRTC</title>
+    <title>Welcome to Calline</title>
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -26,11 +26,11 @@
     </button>
     <button class="mdc-button mdc-button--raised" disabled id="createBtn">
         <i class="material-icons mdc-button__icon" aria-hidden="true">group_add</i>
-        <span class="mdc-button__label">Create room</span>
+        <span class="mdc-button__label">Create a line</span>
     </button>
     <button class="mdc-button mdc-button--raised" disabled id="joinBtn">
         <i class="material-icons mdc-button__icon" aria-hidden="true">group</i>
-        <span class="mdc-button__label">Join room</span>
+        <span class="mdc-button__label">Join a line</span>
     </button>
     <button class="mdc-button mdc-button--raised" disabled id="hangupBtn">
         <i class="material-icons mdc-button__icon" aria-hidden="true">close</i>
@@ -41,7 +41,7 @@
     <span id="currentRoom"></span>
 </div>
 <div id="videos">
-    <video id="localVideo" muted autoplay playsinline></video>
+    <video id="localVideo" muted autoplay playsinline></o>
     <video id="remoteVideo" autoplay playsinline></video>
 </div>
 <div class="mdc-dialog"
@@ -52,12 +52,12 @@
      aria-describedby="my-dialog-content">
     <div class="mdc-dialog__container">
         <div class="mdc-dialog__surface">
-            <h2 class="mdc-dialog__title" id="my-dialog-title">Join room</h2>
+            <h2 class="mdc-dialog__title" id="my-dialog-title">Join a line</h2>
             <div class="mdc-dialog__content" id="my-dialog-content">
-                Enter ID for room to join:
+                Enter ID for the line to join:
                 <div class="mdc-text-field">
                     <input type="text" id="room-id" class="mdc-text-field__input">
-                    <label class="mdc-floating-label" for="my-text-field">Room ID</label>
+                    <label class="mdc-floating-label" for="my-text-field">Line ID</label>
                     <div class="mdc-line-ripple"></div>
                 </div>
             </div>
