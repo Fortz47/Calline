@@ -7,7 +7,7 @@ const videoFrameSwitch = document.querySelector('#video-frame-switch');
 const mic = document.querySelector('#mic');
 const camera = document.querySelector('#camera');
 
-export default function main() {
+function main() {
   // toggle fullscreen
   fullScreenIcon.addEventListener('click', () => {
     container.classList.toggle('container');
@@ -33,20 +33,20 @@ export default function main() {
 
   // toggle mic on/off
   mic.addEventListener('click', () => {
-    mic.classList.toggle('bi-mic-fill');
-    mic.classList.toggle('bi-mic-mute-fill');
-    mic.classList.toggle('text-danger');
+    mic.firstChild.classList.toggle('bi-mic-fill');
+    mic.firstChild.classList.toggle('bi-mic-mute-fill');
+    mic.firstChild.classList.toggle('text-danger');
   });
 
   // toggle camera on/off
   camera.addEventListener('click', () => {
-    camera.classList.toggle('bi-camera-video-fill');
-    camera.classList.toggle('bi-camera-video-off-fill');
-    camera.classList.toggle('text-danger');
+    camera.firstChild.classList.toggle('bi-camera-video-fill');
+    camera.firstChild.classList.toggle('bi-camera-video-off-fill');
+    camera.firstChild.classList.toggle('text-danger');
   });
 }
 
-/* to use current code with html, run "main()"
+/*
   Some of the code will need further implementation
 
   toggle fullscreen => complete
@@ -56,4 +56,5 @@ export default function main() {
   toggle camera on/off => incomplete
 
  */
-module.exports = main;
+main()
+// module.exports = main;
