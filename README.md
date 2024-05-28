@@ -41,4 +41,4 @@ Calline/
 
 ## Authors
 - Atuokwu A. Fortune | [Github](https://github.com/Fortz47) | [Email](atukwu.fortune@gmail.com)
-- Rophen Padonou | [Github](https://github.com/Rophpad) | [Email]()
+- Rophen Padonou | [Github](https://github.com/Rophpad) | [Email](rophenp@gmail.com)
