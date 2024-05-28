@@ -1,0 +1,46 @@
+{
+  "name": "calline",
+  "version": "1.0.0",
+  "description": "## Description Calline is a web application designed for high-quality video and audio calls, supporting both individual and group chats. It features an intuitive interface and robust security measures to ensure a seamless communication experience. Future enhancements will include image processing for background customization and filters, as well as AI tools such as auto-transcription, noise cancellation, and emotion detection to further enhance the user experience.",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.19.2",
+    "firebase": "^10.12.1",
+    "firebase-admin": "^12.1.1",
+    "install": "^0.13.0",
+    "uuid": "^9.0.1"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint",
+    "check-lint": "lint [0-9]*.js",
+    "start-server": "nodemon --exec babel-node --presets @babel/preset-env src/server.js",
+    "start-worker": "nodemon --exec babel-node --presets @babel/preset-env src/worker.js",
+    "dev": "nodemon --exec babel-node --presets @babel/preset-env",
+    "test": "./node_modules/.bin/mocha --require @babel/register --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fortz47/Calline.git"
+  },
+  "keywords": [
+    "video",
+    "call",
+    "chat",
+    "app"
+  ],
+  "author": "Atuokwu Fortune",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fortz47/Calline/issues"
+  },
+  "homepage": "https://github.com/Fortz47/Calline#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/node": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/register": "^7.24.6",
+    "firebase-tools": "^13.10.1",
+    "nodemon": "^3.1.1"
+  }
+}
