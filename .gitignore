@@ -68,3 +68,4 @@ node_modules/
 
 # package-lock file from npm install
 package-lock.json
+serviceAccountKey.json
