@@ -1,13 +1,14 @@
 import dbClient from "../utils/db.js";
 import Media from "../utils/media.js";
-import { 
+import {
   onSnapshot,
   collection,
   addDoc,
   getDoc,
   updateDoc,
   deleteDoc,
-  getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  getDocs
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 let peerConnection = null;
 let localStream = null;
@@ -34,20 +35,28 @@ const mic = document.querySelector('#mic');
 const camera = document.querySelector('#camera');
 
 
-async function createRoom() {
-  if (!localStream) {
-    localStream = await Media.openUserMedia();
-    remoteStream = new MediaStream();
-    document.querySelector('#localVideo').srcObject = localStream;
-    document.querySelector('#remoteVideo').srcObject = remoteStream;
-
+function addTracksToPeerConnection (tracks) {
+  if (tracks.audio) {
+    const [track] = localStream.getAudioTracks();
+    peerConnection.addTrack(track, localStream);
   }
+  if (tracks.video) {
+    const [track] = localStream.getVideoTracks();
+    peerConnection.addTrack(track, localStream);
+  }
+}
+
+
+async function createRoom() {
+  localStream = await Media.openUserMedia();
+  remoteStream = new MediaStream();
+  document.querySelector('#localVideo').srcObject = localStream;
+  document.querySelector('#remoteVideo').srcObject = remoteStream;
+
   console.log('Create PeerConnection with configuration: ', configuration);
   peerConnection = new RTCPeerConnection(configuration);
 
-  localStream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, localStream);
-  });
+  addTracksToPeerConnection({ video: true, audio: true });
 
   registerPeerConnectionListeners();
 
@@ -86,8 +95,8 @@ async function createRoom() {
 
   // Listening for remote session description below
   onSnapshot(roomDocRef, async (snapshot) => {
-    console.log('Got updated room:', snapshot.data());
     const data = snapshot.data();
+    console.log('Got updated room:', data);
     if (!peerConnection.currentRemoteDescription && data.answer) {
       const answer = new RTCSessionDescription(data.answer);
       console.log('Set remote description: ', answer);
@@ -232,11 +241,25 @@ hangupBtn.addEventListener('click', async () => {
   window.location.href = '/';
 });
 
+
+// enable or disable video/audio
+function toggleEnabled (tracks) {
+  if (tracks === 'audio') {
+    const audio = localStream.getAudioTracks()[0];
+    audio.enabled = !audio.enabled;
+  } else if (tracks === 'video') {
+    const video = localStream.getVideoTracks()[0];
+    video.enabled = !video.enabled;
+  }
+}
+
+
 // toggle mic on/off
 mic.addEventListener('click', () => {
   mic.firstChild.classList.toggle('bi-mic-fill');
   mic.firstChild.classList.toggle('bi-mic-mute-fill');
   mic.firstChild.classList.toggle('text-danger');
+  toggleEnabled('audio');
 });
 
 // toggle camera on/off
@@ -244,8 +267,9 @@ camera.addEventListener('click', () => {
   camera.firstChild.classList.toggle('bi-camera-video-fill');
   camera.firstChild.classList.toggle('bi-camera-video-off-fill');
   camera.firstChild.classList.toggle('text-danger');
-
+  toggleEnabled('video');
 });
+
 
 function registerPeerConnectionListeners() {
   peerConnection.addEventListener('icegatheringstatechange', () => {
@@ -270,6 +294,7 @@ function registerPeerConnectionListeners() {
     console.log(`ICE connection state change: ${peerConnection.iceConnectionState}`);
   });
 }
+
 
 const uri = window.location.href.split('/');
 roomId = uri.pop()
