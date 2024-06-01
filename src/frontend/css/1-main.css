@@ -9,6 +9,10 @@
   height: 100%;
 }
 
+#localVideo {
+  transform: scaleX(-1); /* add mirror effect to local feed */
+}
+
 .largeVideo {
   background: black;
   width: 100%;
