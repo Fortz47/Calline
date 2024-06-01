@@ -6,7 +6,7 @@ const joinBtn = document.querySelector('#joinBtn');
 
 
 createBtn.addEventListener('click', async () => {
-  const id = Math.random();
+  const id = Math.round(Math.random() * 1000000);
   // navigates to video call window
   window.location.href = `/call/create/${id}`;
 }, {once: true});
