@@ -45,6 +45,10 @@ async function createRoom() {
   console.log('Create PeerConnection with configuration: ', configuration);
   peerConnection = new RTCPeerConnection(configuration);
 
+  localStream.getTracks().forEach((track) => {
+    peerConnection.addTrack(track, localStream);
+  });
+
   registerPeerConnectionListeners();
 
   const offer = await peerConnection.createOffer();
@@ -57,16 +61,12 @@ async function createRoom() {
     },
   };
 
-  const roomRef = await dbClient.createDoc('room', roomWithOffer);
-  roomId = roomRef.id;
+  const roomDocRef = await dbClient.createDoc('room', roomWithOffer);
+  roomId = roomDocRef.id;
   document.querySelector('#alertId').textContent = `room-id: ${roomId}`;
 
-  localStream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, localStream);
-  });
-
   // Code for collecting ICE candidates below
-  const callerCandidatesCollection = collection(roomRef, 'callerCandidates');
+  const callerCandidatesCollection = collection(roomDocRef, 'callerCandidates');
 
   peerConnection.addEventListener('icecandidate', async (event) => {
     if (event.candidate) {
@@ -80,27 +80,28 @@ async function createRoom() {
     console.log('Got remote track:', event.streams[0]);
     event.streams[0].getTracks().forEach((track) => {
       console.log('Add a track to the remoteStream:', track);
-      remoteStream.addTrack(track);
+      remoteStream.addTrack(track, remoteStream);
     });
   });
 
   // Listening for remote session description below
-  onSnapshot(roomRef, async (snapshot) => {
+  onSnapshot(roomDocRef, async (snapshot) => {
     console.log('Got updated room:', snapshot.data());
     const data = snapshot.data();
     if (!peerConnection.currentRemoteDescription && data.answer) {
-      console.log('Set remote description: ', data.answer);
       const answer = new RTCSessionDescription(data.answer);
+      console.log('Set remote description: ', answer);
       await peerConnection.setRemoteDescription(answer);
     }
   });
   // Listening for remote session description above
 
   // Listen for remote ICE candidates below
-  onSnapshot(collection(roomRef, 'calleeCandidates'), (snapshot) => {
+  onSnapshot(collection(roomDocRef, 'calleeCandidates'), (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === 'added') {
         const candidate = new RTCIceCandidate(change.doc.data());
+        console.log(`added calleIceCandidate: ${candidate}`);
         peerConnection.addIceCandidate(candidate);
       }
     });
@@ -109,8 +110,8 @@ async function createRoom() {
 }
 
 async function joinRoomById(roomId) {
-  const roomRef = dbClient.getDocRef('room', roomId);
-  const roomSnapshot = await getDoc(roomRef);
+  const roomDocRef = dbClient.getDocRef('room', roomId);
+  const roomSnapshot = await getDoc(roomDocRef);
   localStream = await Media.openUserMedia();
   remoteStream = new MediaStream();
   document.querySelector('#localVideo').srcObject = localStream;
@@ -124,7 +125,7 @@ async function joinRoomById(roomId) {
   });
 
   // Code for collecting ICE candidates below
-  const calleeCandidatesCollection = collection(roomRef, 'calleeCandidates');
+  const calleeCandidatesCollection = collection(roomDocRef, 'calleeCandidates');
 
   peerConnection.addEventListener('icecandidate', async (event) => {
     if (event.candidate) {
@@ -133,7 +134,7 @@ async function joinRoomById(roomId) {
     }
   });
 
-  onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
+  onSnapshot(collection(roomDocRef, 'callerCandidates'), (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === 'added') {
         const candidate = new RTCIceCandidate(change.doc.data());
@@ -147,7 +148,7 @@ async function joinRoomById(roomId) {
     console.log('Got remote track:', event.streams[0]);
     event.streams[0].getTracks().forEach((track) => {
       console.log('Add a track to the remoteStream:', track);
-      remoteStream.addTrack(track);
+      remoteStream.addTrack(track, remoteStream);
     });
   });
 
@@ -163,11 +164,11 @@ async function joinRoomById(roomId) {
       sdp: answer.sdp,
     },
   };
-  await updateDoc(roomRef, roomWithAnswer);
+  await updateDoc(roomDocRef, roomWithAnswer);
   // Code for creating SDP answer above
 
   // Listening for remote ICE candidates below
-  onSnapshot(collection(roomRef, 'callerCandidates'), (snapshot) => {
+  onSnapshot(collection(roomDocRef, 'callerCandidates'), (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === 'added') {
         const candidate = new RTCIceCandidate(change.doc.data());
@@ -216,16 +217,16 @@ hangupBtn.addEventListener('click', async () => {
 
   // Delete room on hangup
   if (roomId) {
-    const roomRef = dbClient.getDocRef('room', roomId);
-    const calleeCandidates = await getDocs(collection(roomRef, 'calleeCandidates'));
+    const roomDocRef = dbClient.getDocRef('room', roomId);
+    const calleeCandidates = await getDocs(collection(roomDocRef, 'calleeCandidates'));
     calleeCandidates.forEach(async (candidate) => {
       await deleteDoc(candidate.ref);
     });
-    const callerCandidates = await getDocs(collection(roomRef, 'callerCandidates'));
+    const callerCandidates = await getDocs(collection(roomDocRef, 'callerCandidates'));
     callerCandidates.forEach(async (candidate) => {
       await deleteDoc(candidate.ref);
     });
-    await deleteDoc(roomRef);
+    await deleteDoc(roomDocRef);
   }
 
   window.location.href = '/';
@@ -243,6 +244,7 @@ camera.addEventListener('click', () => {
   camera.firstChild.classList.toggle('bi-camera-video-fill');
   camera.firstChild.classList.toggle('bi-camera-video-off-fill');
   camera.firstChild.classList.toggle('text-danger');
+
 });
 
 function registerPeerConnectionListeners() {
@@ -252,7 +254,12 @@ function registerPeerConnectionListeners() {
 
   peerConnection.addEventListener('connectionstatechange', (event) => {
     console.log(`Connection state change: ${peerConnection.connectionState}`);
-    if (peerConnection.connectionState === 'connected') console.log('connected!');
+    if (peerConnection.connectionState === 'disconnected') {
+      if (remoteStream) {
+        console.log('Remote Disconnected, Stoping remote tracks now');
+        remoteStream.getTracks().forEach((track) => track.stop());
+      }
+    }
   });
 
   peerConnection.addEventListener('signalingstatechange', () => {

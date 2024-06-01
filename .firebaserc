@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "fir-rtc-abecb"
+    "default": "callinev2-a22d5",
+    "callineVersion2": "callinev2-a22d5"
   },
   "targets": {},
   "etags": {},
