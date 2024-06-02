@@ -93,7 +93,7 @@ async function createRoom() {
 
   const displayId = document.querySelector('#displayId');
   const copyId = document.querySelector('#copyId');
-  displayId.value = `room-id  |  ${roomId}`;
+  displayId.value = `Line-Id  |  ${roomId}`;
   displayId.parentElement.hidden = false;
 
   copyId.addEventListener('click', async () => {
