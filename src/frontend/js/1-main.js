@@ -46,6 +46,24 @@ function addTracksToPeerConnection (tracks) {
   }
 }
 
+function deleteRoom (roomId) {
+  return new Promise(async (resolve) => {
+    if (roomId) {
+      const roomDocRef = dbClient.getDocRef('room', roomId);
+      const calleeCandidates = await getDocs(collection(roomDocRef, 'calleeCandidates'));
+      calleeCandidates.forEach(async (candidate) => {
+        await deleteDoc(candidate.ref);
+      });
+      const callerCandidates = await getDocs(collection(roomDocRef, 'callerCandidates'));
+      callerCandidates.forEach(async (candidate) => {
+        await deleteDoc(candidate.ref);
+      });
+      await deleteDoc(roomDocRef);
+    }
+    resolve({});
+  });
+}
+
 
 async function createRoom() {
   localStream = await Media.openUserMedia();
@@ -67,12 +85,25 @@ async function createRoom() {
     offer: {
       type: offer.type,
       sdp: offer.sdp,
-    },
+    }
   };
 
   const roomDocRef = await dbClient.createDoc('room', roomWithOffer);
   roomId = roomDocRef.id;
-  document.querySelector('#alertId').textContent = `room-id: ${roomId}`;
+
+  const displayId = document.querySelector('#displayId');
+  const copyId = document.querySelector('#copyId');
+  displayId.value = `room-id  |  ${roomId}`;
+  displayId.parentElement.hidden = false;
+
+  copyId.addEventListener('click', async () => {
+    displayId.select();
+    displayId.setSelectionRange(0, 1000); // For mobile devices
+    await navigator.clipboard.writeText(roomId);
+    copyId.classList.toggle('bi-clipboard');
+    copyId.classList.toggle('bi-clipboard-check-fill');
+  });
+
 
   // Code for collecting ICE candidates below
   const callerCandidatesCollection = collection(roomDocRef, 'callerCandidates');
@@ -224,20 +255,6 @@ hangupBtn.addEventListener('click', async () => {
   document.querySelector('#localVideo').srcObject = null;
   document.querySelector('#remoteVideo').srcObject = null;
 
-  // Delete room on hangup
-  if (roomId) {
-    const roomDocRef = dbClient.getDocRef('room', roomId);
-    const calleeCandidates = await getDocs(collection(roomDocRef, 'calleeCandidates'));
-    calleeCandidates.forEach(async (candidate) => {
-      await deleteDoc(candidate.ref);
-    });
-    const callerCandidates = await getDocs(collection(roomDocRef, 'callerCandidates'));
-    callerCandidates.forEach(async (candidate) => {
-      await deleteDoc(candidate.ref);
-    });
-    await deleteDoc(roomDocRef);
-  }
-
   window.location.href = '/';
 });
 
@@ -276,13 +293,16 @@ function registerPeerConnectionListeners() {
     console.log(`ICE gathering state changed: ${peerConnection.iceGatheringState}`);
   });
 
-  peerConnection.addEventListener('connectionstatechange', (event) => {
+  peerConnection.addEventListener('connectionstatechange', async (event) => {
     console.log(`Connection state change: ${peerConnection.connectionState}`);
     if (peerConnection.connectionState === 'disconnected') {
       if (remoteStream) {
         console.log('Remote Disconnected, Stoping remote tracks now');
         remoteStream.getTracks().forEach((track) => track.stop());
+        remoteStream = null;
       }
+      await deleteRoom(roomId);
+      roomId = null;
     }
   });
 
