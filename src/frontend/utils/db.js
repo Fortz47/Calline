@@ -7,7 +7,8 @@ import {
   getDoc,
   getDocs,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 class DBClient {
@@ -16,7 +17,11 @@ class DBClient {
   }
 
   async createDoc (collectionName, data) {
-    const docRef = await addDoc(collection(db, collectionName), data);
+    const dataWithTimeStamp = {
+      ...data,
+      createdAt: serverTimestamp(),
+    };
+    const docRef = await addDoc(collection(db, collectionName), dataWithTimeStamp);
     return docRef;
   }
 
