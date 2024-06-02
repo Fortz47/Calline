@@ -62,3 +62,27 @@
   top: 10px;
   right: 10px;
 }
+
+#roomIdDiv {
+  position: relative;
+}
+
+#displayId {
+  background-color: rgb(35, 46, 46);
+  color: rgb(232, 243, 243);
+  border: 0;
+  border-radius: 5px;
+  width: 340px;
+  padding-right: 5px;
+  padding-left: 8px;
+}
+
+#copyId {
+  position: absolute;
+  left: 317px;
+  color: white;
+}
+
+#copyId:hover {
+  color: rgb(152, 225, 152);
+}
