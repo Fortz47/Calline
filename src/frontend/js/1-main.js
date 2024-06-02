@@ -254,7 +254,7 @@ hangupBtn.addEventListener('click', async () => {
 
   document.querySelector('#localVideo').srcObject = null;
   document.querySelector('#remoteVideo').srcObject = null;
-
+  await deleteRoom(roomId);
   window.location.href = '/';
 });
 
