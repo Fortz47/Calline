@@ -20,26 +20,12 @@ Calline is a web application designed for high-quality video and audio calls, su
   - AI tools for auto-transcription, noise cancellation, and emotion detection
 
 ## Usage
-- Visit site at ....
-- Click on the Open Camera button to enable your camera and microphone.
-- Use the Create Room button to start a new call room or the Join Room button to join an existing room by entering the room ID.
-- Share the room ID with others to have them join the call.
+- Visit site at [https://calline.onrender.com](https://calline.onrender.com)
+- Click **create line** or the **join line** button to join an existing line by entering the line ID
+- Grant app permission to access your camera and microphone
+- If you created a line copy and share the line ID with one other person to have them join the call.
 - Click the Hang Up button to end the call.
-
-## File Structure
-```
-Calline/
-├── controllers/
-│   └── AppController.js
-├── public/
-│   └── index.html
-├── routes/
-│   └── index.js
-├── server.js
-└── README.md
-```
 
 ## Authors
 - Atuokwu A. Fortune | [Github](https://github.com/Fortz47) | [Email](atukwu.fortune@gmail.com)
 - Rophen Padonou | [Github](https://github.com/Rophpad) | [Email](rophenp@gmail.com)
-
