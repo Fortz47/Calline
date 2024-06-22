@@ -1,7 +1,7 @@
 # Calline
 
 ## Description
-Calline is a web application designed for high-quality video and audio calls, supporting both individual and group chats. It features an intuitive interface and robust security measures to ensure a seamless communication experience. Future enhancements will include image processing for background customization and filters, as well as AI tools such as auto-transcription, noise cancellation, and emotion detection to further enhance the user experience.
+Calline is a web application designed for individual high-quality video and audio calls. It features an intuitive interface to ensure a seamless communication experience. Future enhancements will include image processing for background customization and filters.
 
 ## Technologies
 - **WebRTC**: Real-time communication for video and audio calls.
