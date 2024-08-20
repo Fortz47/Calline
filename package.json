@@ -4,6 +4,7 @@
   "description": "## Description Calline is a web application designed for high-quality video and audio calls, supporting both individual and group chats. It features an intuitive interface and robust security measures to ensure a seamless communication experience. Future enhancements will include image processing for background customization and filters, as well as AI tools such as auto-transcription, noise cancellation, and emotion detection to further enhance the user experience.",
   "main": "index.js",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "firebase": "^10.12.1",
     "firebase-admin": "^12.1.1",

@@ -14,52 +14,7 @@ let peerConnection = null;
 let localStream = null;
 let remoteStream = null;
 let roomId = null;
-// const configuration = {
-//   iceServers: [
-//     { urls: 'stun:stun.relay.metered.ca:80' },
-//     {
-//       urls: 'turn:global.relay.metered.ca:80',
-//       username: '9ec551072160e83ff2afd0b2',
-//       credential: 'gvm3pbOROCXc7jSX'
-//     },
-//     {
-//       urls: 'turn:global.relay.metered.ca:80?transport=tcp',
-//       username: '9ec551072160e83ff2afd0b2',
-//       credential: 'gvm3pbOROCXc7jSX'
-//     },
-//     {
-//       urls: 'turn:global.relay.metered.ca:443',
-//       username: '9ec551072160e83ff2afd0b2',
-//       credential: 'gvm3pbOROCXc7jSX'
-//     },
-//     {
-//       urls: 'turns:global.relay.metered.ca:443?transport=tcp',
-//       username: '9ec551072160e83ff2afd0b2',
-//       credential: 'gvm3pbOROCXc7jSX'
-//     }
-//   ]
-// };
 
-// const configuration = {
-//   iceServers: [
-//     {
-//       urls: 'stun:stun1.l.google.com:19302'
-//     },
-//     {
-//       urls:  'stun:stun2.l.google.com:19302'
-//     },
-//     {
-//       url: 'turn:numb.viagenie.ca',
-//       credential: 'muazkh',
-//       username: 'webrtc@live.com'
-//     },
-//     {
-//       url: 'turn:192.158.29.39:3478?transport=udp',
-//       credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-//       username: '28224511:1379330808'
-//     },
-//   ]
-// };
 const configuration = {};
 (async () => {
   const response = await fetch('/ice-servers');
