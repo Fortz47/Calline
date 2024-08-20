@@ -11,9 +11,7 @@ class Appcontroller {
     const appName = 'calline-video-chat';
     const response = await fetch(`https://${appName}.metered.live/api/v1/turn/credentials?apiKey=${API_KEY}`);
     const iceServers = await response.json();
-    console.log('iceServers:', iceServers);
-    res.json(iceServers);
-    // return iceServers;
+    res.send(iceServers);
   }
 }
 

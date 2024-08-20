@@ -40,33 +40,32 @@ let roomId = null;
 //   ]
 // };
 
-const configuration = {
-  iceServers: [
-    {
-      urls: 'stun:stun1.l.google.com:19302'
-    },
-    {
-      urls:  'stun:stun2.l.google.com:19302'
-    },
-    {
-      url: 'turn:numb.viagenie.ca',
-      credential: 'muazkh',
-      username: 'webrtc@live.com'
-    },
-    {
-      url: 'turn:192.158.29.39:3478?transport=udp',
-      credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-      username: '28224511:1379330808'
-    },
-  ]
-};
-
-// const iceServers = await fetch('/ice-servers').then((res) => res.json());
-// (async () => {
-//   const iceServers = fetch('/ice-servers').then((res) => res.json());
-//   console.log(`iceServers: ${iceServers}`);
-//   configuration.iceServers = iceServers;
-// })();
+// const configuration = {
+//   iceServers: [
+//     {
+//       urls: 'stun:stun1.l.google.com:19302'
+//     },
+//     {
+//       urls:  'stun:stun2.l.google.com:19302'
+//     },
+//     {
+//       url: 'turn:numb.viagenie.ca',
+//       credential: 'muazkh',
+//       username: 'webrtc@live.com'
+//     },
+//     {
+//       url: 'turn:192.158.29.39:3478?transport=udp',
+//       credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+//       username: '28224511:1379330808'
+//     },
+//   ]
+// };
+const configuration = {};
+(async () => {
+  const response = await fetch('/ice-servers');
+  const iceServers = await response.json();
+  configuration.iceServers = iceServers;
+})();
 
 const container = document.querySelector('#containerId');
 const hangupBtn = document.querySelector('#hangupBtn');
