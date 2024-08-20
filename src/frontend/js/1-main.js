@@ -14,14 +14,37 @@ let peerConnection = null;
 let localStream = null;
 let remoteStream = null;
 let roomId = null;
-let iceServers;
+const configuration = {
+  iceServers: [
+    { urls: 'stun:stun.relay.metered.ca:80' },
+    {
+      urls: 'turn:global.relay.metered.ca:80',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
+    },
+    {
+      urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
+    },
+    {
+      urls: 'turn:global.relay.metered.ca:443',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
+    },
+    {
+      urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
+    }
+  ]
+};
 // const iceServers = await fetch('/ice-servers').then((res) => res.json());
-(async () => {
-  iceServers = await fetch('/ice-servers');
-})();
-console.log(`iceServers: ${iceServers}`);
-
-const configuration = { iceServers };
+// (async () => {
+//   const iceServers = fetch('/ice-servers').then((res) => res.json());
+//   console.log(`iceServers: ${iceServers}`);
+//   configuration.iceServers = iceServers;
+// })();
 
 const container = document.querySelector('#containerId');
 const hangupBtn = document.querySelector('#hangupBtn');
@@ -33,20 +56,18 @@ const mic = document.querySelector('#mic');
 const camera = document.querySelector('#camera');
 
 
-function addTracksToPeerConnection() {
-    const [tracks] = localStream.getTracks();
-    peerConnection.addTrack(tracks, localStream);
+function addTracksToPeerConnection(constraints) {
+  if (constraints.audio) {
+    const [track] = localStream.getAudioTracks();
+    peerConnection.addTrack(track, localStream);
+  }
+  if (constraints.video) {
+    const [track] = localStream.getVideoTracks();
+    peerConnection.addTrack(track, localStream);
+  }
 }
 
 function registerPeerConnectionListeners() {
-  peerConnection.ontrack = ({ track, streams }) => {
-    console.log('recieved remote track: ', streams[0]);
-    track.onunmute = () => {
-      if (remoteVideo.srcObject) return;
-    }
-    remoteVideo.srcObject = streams[0];
-  }
-
   peerConnection.addEventListener('icegatheringstatechange', () => {
     console.log(`ICE gathering state changed: ${peerConnection.iceGatheringState}`);
   });
@@ -99,8 +120,10 @@ async function createRoom() {
   console.log('Create PeerConnection with configuration: ', configuration);
   peerConnection = new RTCPeerConnection(configuration);
 
-  addTracksToPeerConnection();
+  const constraints = { video: true, audio: true };
+  addTracksToPeerConnection(constraints);
   localVideo.srcObject = localStream;
+  remoteVideo.srcObject = remoteStream;
 
   registerPeerConnectionListeners();
 
@@ -182,8 +205,10 @@ async function joinRoomById(roomId) {
   remoteStream = new MediaStream();
 
   peerConnection = new RTCPeerConnection(configuration);
-  addTracksToPeerConnection();
+  const constraints = { video: true, audio: true };
+  addTracksToPeerConnection(constraints);
   localVideo.srcObject = localStream;
+  remoteVideo.srcObject = remoteStream;
 
   registerPeerConnectionListeners();
 
@@ -275,15 +300,15 @@ hangupBtn.addEventListener('click', async () => {
     peerConnection.close();
   }
 
-  document.querySelector('#localVideo').srcObject = null;
-  document.querySelector('#remoteVideo').srcObject = null;
+  localVideo.srcObject = null;
+  remoteVideo.srcObject = null;
   await deleteRoom(roomId);
   window.location.href = '/';
 });
 
 
 // enable or disable video/audio
-function toggleEnabled (tracks) {
+function toggleEnabled(tracks) {
   if (tracks === 'audio') {
     const audio = localStream.getAudioTracks()[0];
     audio.enabled = !audio.enabled;
