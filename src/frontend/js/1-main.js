@@ -16,14 +16,35 @@ let remoteStream = null;
 let roomId = null;
 const configuration = {
   iceServers: [
+    { urls: 'stun:stun.relay.metered.ca:80' },
     {
-      urls: [
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-      ],
+      urls: 'turn:global.relay.metered.ca:80',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
     },
-  ],
+    {
+      urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
+    },
+    {
+      urls: 'turn:global.relay.metered.ca:443',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
+    },
+    {
+      urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+      username: '9ec551072160e83ff2afd0b2',
+      credential: 'gvm3pbOROCXc7jSX'
+    }
+  ]
 };
+// const iceServers = await fetch('/ice-servers').then((res) => res.json());
+// (async () => {
+//   const iceServers = fetch('/ice-servers').then((res) => res.json());
+//   console.log(`iceServers: ${iceServers}`);
+//   configuration.iceServers = iceServers;
+// })();
 
 const container = document.querySelector('#containerId');
 const hangupBtn = document.querySelector('#hangupBtn');
@@ -35,18 +56,45 @@ const mic = document.querySelector('#mic');
 const camera = document.querySelector('#camera');
 
 
-function addTracksToPeerConnection (tracks) {
-  if (tracks.audio) {
+function addTracksToPeerConnection(constraints) {
+  if (constraints.audio) {
     const [track] = localStream.getAudioTracks();
     peerConnection.addTrack(track, localStream);
   }
-  if (tracks.video) {
+  if (constraints.video) {
     const [track] = localStream.getVideoTracks();
     peerConnection.addTrack(track, localStream);
   }
 }
 
-function deleteRoom (roomId) {
+function registerPeerConnectionListeners() {
+  peerConnection.addEventListener('icegatheringstatechange', () => {
+    console.log(`ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+  });
+
+  peerConnection.addEventListener('connectionstatechange', async (event) => {
+    console.log(`Connection state change: ${peerConnection.connectionState}`);
+    if (peerConnection.connectionState === 'disconnected') {
+      if (remoteStream) {
+        console.log('Remote Disconnected, Stoping remote tracks now');
+        remoteStream.getTracks().forEach((track) => track.stop());
+        remoteStream = null;
+      }
+      await deleteRoom(roomId);
+      roomId = null;
+    }
+  });
+
+  peerConnection.addEventListener('signalingstatechange', () => {
+    console.log(`Signaling state change: ${peerConnection.signalingState}`);
+  });
+
+  peerConnection.addEventListener('iceconnectionstatechange ', () => {
+    console.log(`ICE connection state change: ${peerConnection.iceConnectionState}`);
+  });
+}
+
+function deleteRoom(roomId) {
   return new Promise(async (resolve) => {
     if (roomId) {
       const roomDocRef = dbClient.getDocRef('room', roomId);
@@ -68,13 +116,14 @@ function deleteRoom (roomId) {
 async function createRoom() {
   localStream = await Media.openUserMedia();
   remoteStream = new MediaStream();
-  document.querySelector('#localVideo').srcObject = localStream;
-  document.querySelector('#remoteVideo').srcObject = remoteStream;
 
   console.log('Create PeerConnection with configuration: ', configuration);
   peerConnection = new RTCPeerConnection(configuration);
 
-  addTracksToPeerConnection({ video: true, audio: true });
+  const constraints = { video: true, audio: true };
+  addTracksToPeerConnection(constraints);
+  localVideo.srcObject = localStream;
+  remoteVideo.srcObject = remoteStream;
 
   registerPeerConnectionListeners();
 
@@ -154,15 +203,14 @@ async function joinRoomById(roomId) {
   const roomSnapshot = await getDoc(roomDocRef);
   localStream = await Media.openUserMedia();
   remoteStream = new MediaStream();
-  document.querySelector('#localVideo').srcObject = localStream;
-  document.querySelector('#remoteVideo').srcObject = remoteStream;
-
 
   peerConnection = new RTCPeerConnection(configuration);
+  const constraints = { video: true, audio: true };
+  addTracksToPeerConnection(constraints);
+  localVideo.srcObject = localStream;
+  remoteVideo.srcObject = remoteStream;
+
   registerPeerConnectionListeners();
-  localStream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, localStream);
-  });
 
   // Code for collecting ICE candidates below
   const calleeCandidatesCollection = collection(roomDocRef, 'calleeCandidates');
@@ -252,15 +300,15 @@ hangupBtn.addEventListener('click', async () => {
     peerConnection.close();
   }
 
-  document.querySelector('#localVideo').srcObject = null;
-  document.querySelector('#remoteVideo').srcObject = null;
+  localVideo.srcObject = null;
+  remoteVideo.srcObject = null;
   await deleteRoom(roomId);
   window.location.href = '/';
 });
 
 
 // enable or disable video/audio
-function toggleEnabled (tracks) {
+function toggleEnabled(tracks) {
   if (tracks === 'audio') {
     const audio = localStream.getAudioTracks()[0];
     audio.enabled = !audio.enabled;
@@ -286,34 +334,6 @@ camera.addEventListener('click', () => {
   camera.firstChild.classList.toggle('text-danger');
   toggleEnabled('video');
 });
-
-
-function registerPeerConnectionListeners() {
-  peerConnection.addEventListener('icegatheringstatechange', () => {
-    console.log(`ICE gathering state changed: ${peerConnection.iceGatheringState}`);
-  });
-
-  peerConnection.addEventListener('connectionstatechange', async (event) => {
-    console.log(`Connection state change: ${peerConnection.connectionState}`);
-    if (peerConnection.connectionState === 'disconnected') {
-      if (remoteStream) {
-        console.log('Remote Disconnected, Stoping remote tracks now');
-        remoteStream.getTracks().forEach((track) => track.stop());
-        remoteStream = null;
-      }
-      await deleteRoom(roomId);
-      roomId = null;
-    }
-  });
-
-  peerConnection.addEventListener('signalingstatechange', () => {
-    console.log(`Signaling state change: ${peerConnection.signalingState}`);
-  });
-
-  peerConnection.addEventListener('iceconnectionstatechange ', () => {
-    console.log(`ICE connection state change: ${peerConnection.iceConnectionState}`);
-  });
-}
 
 
 const uri = window.location.href.split('/');
