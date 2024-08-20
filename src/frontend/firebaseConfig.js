@@ -7,8 +7,9 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const API_KEY = await fetch('/firebase-api-key').then(res => res.text());
 const firebaseConfig = {
-  apiKey: "AIzaSyD5q0IPo7W-t-TI0xCS-ss4ucFF4PhrRsc",
+  apiKey: API_KEY,
   authDomain: "callinev2-a22d5.firebaseapp.com",
   projectId: "callinev2-a22d5",
   storageBucket: "callinev2-a22d5.appspot.com",
