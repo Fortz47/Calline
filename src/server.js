@@ -7,8 +7,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'frontend')));
 
 app.use('/', router);
-app.listen(5002, () => {
-  console.log('listening on port 5002');
+app.listen(10000, () => {
+  console.log('listening on port 10000');
 })
 
 export default app;
